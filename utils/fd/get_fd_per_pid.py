@@ -9,7 +9,7 @@ for pid in pids:
   try:
     print pid
     pid = pid.strip()
-    process = os.popen("readlink /prod/" + pid + "/fd/*")
+    process = os.popen("readlink /proc/" + pid + "/fd/*")
     print (process.read())
   except IOError:  # proc has already terminated
     continue

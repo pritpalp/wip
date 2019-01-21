@@ -12,8 +12,8 @@ for pid in pids:
   try:
     pid = pid.strip()
     process = os.popen("readlink /proc/" + pid + "/fd/*")
-    cmd = open("/proc/" + pid + "/cmdline").read()
-    fds = process.read().strip().splitlines()
+    cmd = open("/proc/" + pid + "/cmdline").read()  # get the cmd that's running
+    fds = process.read().strip().splitlines()  # list the contents of /proc/[pid]/fd/
     i = 0
     for fd in fds:
       if not (fd.startswith("socket") or fd.startswith("pipe") or fd.startswith("/dev/")):

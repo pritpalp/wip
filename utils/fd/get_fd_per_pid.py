@@ -11,6 +11,12 @@ args = parser.parse_args()
 percent_limit = args.percent_limit
 
 # print "Open file descriptors from /proc/sys/fs/file-nr: ", open("/proc/sys/fs/file-nr").read().strip()
+file_nr = open("/proc/sys/fs/file-nr").read().strip()
+open_fd = file_nr.split()[0]
+max_fd = file_nr.split()[-1]
+percentage_max_fd = round(float(open_fd) / float(max_fd) * 100, 2)
+if percentage_max_fd > percent_limit:
+  print "Total open file descriptors have reached", percentage_max_fd, "% of the system max (", open_fd, " of ", max_fd, ")"
 
 # get the soft limit and store it
 soft_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
@@ -26,7 +32,13 @@ for pid in pids:
   try:
     pid = pid.strip()
     cmd = open("/proc/" + pid + "/cmdline").read()  # get the cmd that's running
-    cmd = cmd.split()[0].split("/")[-1]  # just grab the first part of the cmd
+    # just try to grab the first part of the cmd
+    if cmd.strip():
+      cmd = cmd.split()[0]
+      if ":" in cmd:
+        cmd = cmd.split(":")[0]
+      else:
+        cmd = cmd.split("/")[-1]
     # cmd = os.readlink("/proc/" + pid + "/exe")  # this doesn't work very well, can get permission denied
     # path, cmd = os.path.split(cmd)
     # process = os.popen("readlink /proc/" + pid + "/fd/*")

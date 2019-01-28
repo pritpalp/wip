@@ -26,7 +26,7 @@ for pid in pids:
   try:
     pid = pid.strip()
     cmd = open("/proc/" + pid + "/cmdline").read()  # get the cmd that's running
-    cmd = cmd.split()[0]
+    cmd = cmd.split()[0].split("/")[-1]  # just grab the first part of the cmd
     # cmd = os.readlink("/proc/" + pid + "/exe")  # this doesn't work very well, can get permission denied
     # path, cmd = os.path.split(cmd)
     # process = os.popen("readlink /proc/" + pid + "/fd/*")

@@ -21,11 +21,6 @@ if percentage_max_fd > percent_limit:
 # get the soft limit and store it
 soft_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-p", dest="percent_limit", default=80, type=int)
-args = parser.parse_args()
-percent_limit = args.percent_limit
-
 pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
 
 for pid in pids:

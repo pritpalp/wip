@@ -27,13 +27,14 @@ if percentage_max_fd > percent_limit:
   print "Total open file descriptors have reached", percentage_max_fd, "% of the system max (", open_fd, " of ", max_fd, ")"
 
 # get the soft limit and store it, to use as backup
-soft_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
+default_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
 
 pids = [pid for pid in os.listdir('/proc') if pid.isdigit()]
 
 for pid in pids:
   try:
     pid = pid.strip()
+    soft_limit = default_limit
     limits = open("/proc/" + pid + "/limits").readlines()  # get the limits for the proc
     for line in limits:
       if line.startswith("Max open files"):
@@ -54,4 +55,6 @@ for pid in pids:
       if percentage_used > percent_limit:
         print "PID ", pid, " has used", percentage_used, "% of the available file descriptors (", i, "/", soft_limit, ")"
   except IOError:  # proc has already terminated
+    continue
+  except ZeroDivisionError: # somehow managed to get a zero, ignore for now
     continue

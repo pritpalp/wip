@@ -7,10 +7,11 @@ API_KEY = ""
 DYNATRACE_URL = ""
 API_VERSION = "/api/config/v1"
 ENVIRONMENT_ID = ""
+PATH = "../Dynatrace/config/"
 
 def write_file(filename, contents):
   # create a file if we need one
-  f = open(filename, "w+")
+  f = open(PATH+filename, "w+")
   f.write(contents)
   f.close
 
@@ -50,6 +51,29 @@ config_to_get("/anomalyDetection/databaseServices", "db_anomaly_detection")
 # Anomaly Detection - Hosts
 config_to_get("/anomalyDetection/hosts", "host_anomaly_detection")
 
+# Anomaly Detection - Services
+config_to_get("/anomalyDetection/services", "services_anomaly_detection")
+
 # Anomaly Detection - Metric events
 # **** Need to expand this out and get the individual entities ****
 config_to_get("/anomalyDetection/metricEvents", "metric_anomaly_detection", "&includeEntityFilterMetricEvents=true")
+
+# Application detection configuration
+# **** Need to expand this out and get the individual entities ****
+config_to_get("/applicationDetectionRules", "app_detection_config")
+
+# Automatically applied tags
+# **** Need to expand this out and get the individual entities ****
+config_to_get("/autoTags", "auto_tags")
+
+# Dashboards
+# **** Need to expand this out and get the individual entities ****
+config_to_get("/dashboards", "dashboards")
+
+# Maintenance windows
+# **** Need to expand this out and get the individual entities ****
+config_to_get("/maintenanceWindows", "maintenance")
+
+# Management zones
+# **** Need to expand this out and get the individual entities ****
+config_to_get("/managementZones", "management_zones")

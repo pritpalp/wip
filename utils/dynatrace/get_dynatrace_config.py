@@ -1,22 +1,23 @@
-#!/bin/python
 import requests
+import os
 
 # Constants
 API_TOKEN = "?Api-Token="
-API_KEY = ""
-DYNATRACE_URL = ""
 API_VERSION = "/api/config/v1"
-ENVIRONMENT_ID = ""
-PATH = "../Dynatrace/config/"
+API_KEY = os.getenv("API_KEY")
+DYNATRACE_URL = os.getenv("DYNATRACE_URL")
+ENVIRONMENT_ID = os.getenv("ENVIRONMENT_ID")
+PATH = os.getenv("DYNATRACE_CONF_PATH")
 
 def write_file(filename, contents):
-  # create a file if we need one
+  # create a file if we need one and write the contents to it
   f = open(PATH+filename, "w+")
   f.write(contents)
   f.close
 
 
 def do_request(action):
+  # send a request to the server and return the response
   response = requests.get(action)
   server_response = ""
   if response.status_code == 200:
@@ -25,6 +26,7 @@ def do_request(action):
 
 
 def config_to_get(url_part, get_what, params="NONE"):
+  # construct the url, send the request to the server, and write out the response to file
   if params is "NONE":
     action = DYNATRACE_URL+ENVIRONMENT_ID+API_VERSION+url_part+API_TOKEN+API_KEY
   else:

@@ -1,5 +1,6 @@
 import requests
 import os
+import json
 
 # Constants
 API_TOKEN = "?Api-Token="
@@ -18,23 +19,25 @@ def write_file(filename, contents):
 
 def do_request(action):
   # send a request to the server and return the response
-  response = requests.get(action)
-  server_response = ""
-  if response.status_code == 200:
-    server_response = response.content.decode('utf-8')
-  return server_response
+  return requests.get(action)
 
 
-def config_to_get(url_part, get_what, params="NONE"):
+def config_to_get(url_part, get_what, params="NONE", multipart="FALSE"):
   # construct the url, send the request to the server, and write out the response to file
   if params is "NONE":
     action = DYNATRACE_URL+ENVIRONMENT_ID+API_VERSION+url_part+API_TOKEN+API_KEY
   else:
     action = DYNATRACE_URL+ENVIRONMENT_ID+API_VERSION+url_part+API_TOKEN+API_KEY+params
   filename = get_what + ".json"
+  original_get_what = get_what
   get_what = do_request(action)
-  write_file(filename, get_what)
+  write_file(filename, get_what.content.decode('utf-8'))
   print action + "\n"
+  if multipart is "TRUE":
+    json_repsonse = json.loads(get_what.content.decode('utf-8'))
+    for ids in json_repsonse["values"]:
+      # should I put the id into the filename instead of name...
+      config_to_get(url_part + "/" + ids['id'], (original_get_what + "__" + ids['name']).replace(" ", "_"))
 
 
 # Web application config
@@ -57,25 +60,20 @@ config_to_get("/anomalyDetection/hosts", "host_anomaly_detection")
 config_to_get("/anomalyDetection/services", "services_anomaly_detection")
 
 # Anomaly Detection - Metric events
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/anomalyDetection/metricEvents", "metric_anomaly_detection", "&includeEntityFilterMetricEvents=true")
+config_to_get("/anomalyDetection/metricEvents", "metric_anomaly_detection", "&includeEntityFilterMetricEvents=true", "TRUE")
 
 # Application detection configuration
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/applicationDetectionRules", "app_detection_config")
+config_to_get("/applicationDetectionRules", "app_detection_config", "NONE", "TRUE")
 
 # Automatically applied tags
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/autoTags", "auto_tags")
-
-# Dashboards
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/dashboards", "dashboards")
+config_to_get("/autoTags", "auto_tags", "NONE", "TRUE")
 
 # Maintenance windows
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/maintenanceWindows", "maintenance")
+config_to_get("/maintenanceWindows", "maintenance", "NONE", "TRUE")
 
 # Management zones
-# **** Need to expand this out and get the individual entities ****
-config_to_get("/managementZones", "management_zones")
+config_to_get("/managementZones", "management_zones", "NONE", "TRUE")
+
+# Dashboards
+# **** Need to fix this as the json comes back as "dashboards" rather than "values" ****
+#config_to_get("/dashboards", "dashboards", "NONE", "TRUE")

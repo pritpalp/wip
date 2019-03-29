@@ -6,18 +6,16 @@ import io
 # Constants
 API_STRING = "?Api-Token="
 API_VERSION = "/api/config/v1"
-
-# pull from environment vars
 API_KEY = os.getenv("API_KEY")
 DYNATRACE_URL = os.getenv("DYNATRACE_URL")
 ENVIRONMENT_ID = os.getenv("ENVIRONMENT_ID")
 PATH = os.getenv("DYNATRACE_CONF_PATH")
 
-
 def write_file(filename, contents):
   # create a file if we need one and write the contents to it
   f = io.open(PATH+filename, "w+", encoding="utf-8")
-  f.write(contents)
+  json_contents = json.loads(contents)
+  f.write((json.dumps(json_contents, sort_keys=True, indent=2, separators=(',', ': ')).decode('utf-8')))
   f.close
 
 
@@ -35,6 +33,7 @@ def config_to_get(url_part, get_what, params="NONE", multipart="FALSE"):
   filename = get_what + ".json"
   server_response = do_request(action)
   print action + "\n"
+  print server_response.content.decode('utf-8')
   write_file(filename, server_response.content.decode('utf-8'))
   if multipart is "TRUE":
     json_repsonse = json.loads(server_response.content.decode('utf-8'))

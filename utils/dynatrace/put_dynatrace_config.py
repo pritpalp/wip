@@ -6,7 +6,7 @@ import yaml
 
 # Constants
 API_STRING = "?Api-Token="
-API_VERSION = "/api/config/v1"
+API_VERSION = "/api/v1"  # for hosted "/api/config/v1"
 
 # Pulled from environement variables
 CONFIG_FILE = os.getenv("DYNATRACE_CONFIG_FILE")
@@ -34,3 +34,15 @@ for (k, v) in content.items():
     id = str(v)
     break
 print "id:", id
+
+# task two, send a post and check the response
+# construct the url
+#url = "https://qas17954.sprint.dynatracelabs.com/api/v1/maintenance?Api-Token=O5sKgj9_Rs2kKc_1KTyKK"
+action = DYNATRACE_URL+API_VERSION+"/maintenance"+API_STRING+API_KEY
+# we get a ssl error to do with the self signed cert on the test env, so have to set verify=False
+headers = {'content-type' : 'application/json'}
+# we should be able to just set json=content or something and not worry about setting headers,
+# but the api is different in my test env
+r = requests.post(action, data=json.dumps(content), verify=False, headers=headers)
+print r.status_code
+print r.content

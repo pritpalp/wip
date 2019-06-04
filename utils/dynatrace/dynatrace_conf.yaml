@@ -58,3 +58,8 @@ name:           "dashboards"
 dynatrace_url:  "/dashboards"
 params:         "NOPARAMS"
 multipart:      "IS_MULTIPART"
+---
+name:           "frequent_issue_detection"
+dynatrace_url:  "/frequentIssueDetection"
+params:         "NOPARAMS"
+multipart:      "ISNT_MULTIPART"

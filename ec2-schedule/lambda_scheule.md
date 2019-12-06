@@ -12,6 +12,8 @@
 
 As you can see from the component list there are a few elements to set up. But it's all relatively simple.
 
+Logs can be found in CloudWatch.
+
 ### Set up IAM
 
 An IAM policy and role need to be created. The policy dictates what access the Lambda function will have and the role applies the policy to the Lambda function when we create it.
@@ -62,17 +64,18 @@ An IAM policy and role need to be created. The policy dictates what access the L
 6. Add any tags you need, click 'Next: Review'
 7. Give the Role a name and description and click 'Create role' in the botom left
 
-### Create the Lambda funstions
+### Create the Lambda funstion
 
-We create two functions, one to stop and one to start.
-The code is very similar between the two (just the start_instances and stop_instances mehods and log message that are different)
+We create one function and pass a variable (action) via the schedule to determine what the fuction will do.
 The code pulls a list of the ec2 resources and creates a client to execute commands with. The list of resources is used to loop through and use the instance id to stop/start the instance.
+
+`action` can have a value of `stop` or `start` and is case sensitive
 
 #### Start Function
 
 1. Go to the Lambda Dashboard
 2. Click 'Create function'
-3. Give the function a name eg 'startEC2Instances'
+3. Give the function a name eg 'startStopEC2Instances'
 4. Select the Python 3.7 runtime
 5. Under permissions, change Execution role to 'Use and existing role' and select the role created in the previous step
 6. Click 'Create function'
@@ -92,38 +95,17 @@ ec2 = boto3.client('ec2', region_name=region)
 resource = boto3.resource('ec2')
 
 def lambda_handler(event, context):
+    # get the option from the calling schedule
+    action = event["action"]
     # loop through the instance collection getting the id's
     # and stopping/starting the instances
     for instance in resource.instances.all():
         instance_id = instance.id
-        ec2.start_instances(InstanceIds=[instance_id])
-        # msg for the cloudwatch log
-        print('start your instance: ' + instance_id)
-```
-
-#### Stop Function
-
-Repeat the steps above to create a new function, but use the code below for the stop function
-
-```Pyhton
-import boto3
-
-# Define the region here, we use this to get the instances
-region = 'eu-west-2'
-
-# ec2 var to execute the stop/start commands,
-# resource to get the instance descriptions including id's
-ec2 = boto3.client('ec2', region_name=region)
-resource = boto3.resource('ec2')
-
-def lambda_handler(event, context):
-    # loop through the instance collection getting the id's
-    # and stopping/starting the instances
-    for instance in resource.instances.all():
-        instance_id = instance.id
-        ec2.stop_instances(InstanceIds=[instance_id])
-        # msg for the cloudwatch log
-        print('stop your instance: ' + instance_id)
+        if action == "stop":
+            ec2.stop_instances(InstanceIds=[instance_id])
+        else:
+            ec2.start_instances(InstanceIds=[instance_id])
+        print(action + ' your instance: ' + instance_id)
 ```
 
 ### CloudWatch Schedule
@@ -138,7 +120,10 @@ To run the functions on a schedule we can do that within CloudWatch. Two schedul
 6. Click 'Add target'
 7. Select 'Lambda function' from the drop down
 8. Select your function from the drop down
-9. Click 'Configure details'
-10. Give a name and description and click 'Create rule'
-11. Repeat for the other schedule.
+9. Expand 'Configure input' and select 'Constant (JSON text)'
+10. Add in `{"action": "start"}` or `{"action": "stop"}` in the text box
+11. Click 'Configure details'
+12. Give a name and description and click 'Create rule'
+13. Repeat for the other schedule.
 
+Based on the info found [here](https://aws.amazon.com/premiumsupport/knowledge-center/start-stop-lambda-cloudwatch/)

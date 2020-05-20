@@ -141,7 +141,7 @@ Vagrant.configure("2") do |config|
 end
 ```
 
-You can expose ports as well via the *Vagrantfile*, for example to map port 4567 to 80 on the vagrant box:
+You can expose ports as well via the *Vagrantfile*, for example to map port 80 ton the host to 4567 on the vagrant box:
 ```bash
 config.vm.network :forwarded_port, guest: 80, host:4567
 ```

@@ -5,7 +5,7 @@
 #
 # Required parameters: resource group name, name of Redis cache
 #
-# Example: ./redis_password.sh lpgtest lpg-lpgtest-redis
+# Example: ./redis_password.sh myResourceGroup myRedis
 
 key=$(az redis list-keys -g $1 -n $2 -o tsv| awk -F ' ' '{print $1}')
 

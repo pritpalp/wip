@@ -5,7 +5,7 @@
 #
 # Required parameters: webapp name, resource group name, docker tag
 #
-# Example: ./update_images.sh lpg-lpgdev-learning-locker-api-worker lpgdev cshr/lpg-learning-locker:213ad45eb11f7924fcec151e852bb729476279338f30ffb040daa3f2df896f5c-v2
+# Example: ./update_images.sh myApp myResourceGroup myDockerTag
 
 
 if [[ $# -eq 0 ]]; then
@@ -18,5 +18,4 @@ if [[ $# -gt 3 ]]; then
   exit 1
 fi
 
-#az webapp config container set -n lpg-lpgdev-learning-locker-api-worker -g lpgdev -c cshr/lpg-learning-locker:213ad45eb11f7924fcec151e852bb729476279338f30ffb040daa3f2df896f5c-v2
 az webapp config container set -n $1 -g $2 -c $3

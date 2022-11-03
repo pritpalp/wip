@@ -8,7 +8,7 @@
 # Resource group
 # Web App for Container name
 #
-# Example: ./add_ip.sh lpgtest lpg-lpgtest-wso2
+# Example: ./add_ip.sh myResourceGroup myWebApp
 
 IN=$(az webapp show -g $1 -n $2 --query possibleOutboundIpAddresses -o tsv)
 existing=$(az mysql server firewall-rule list -g $1 -s lpg-$1-mysql | grep -i startipaddress)

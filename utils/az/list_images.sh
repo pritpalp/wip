@@ -5,7 +5,7 @@
 #
 # Required arguments: resource group name
 #
-# Example: ./list_images.sh lpgtest
+# Example: ./list_images.sh myResourceGroup
 
 echo "Note that it may run a little slow, due to the number of calls to query Azure"
 
